@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Samsung One UI Notes Pro</title>
+
+<!-- FONT -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- ICONS -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+:root{
+
+  --bg:#F2F2F7;
+  --card:#FFFFFF;
+  --text:#111827;
+  --sub:#6B7280;
+  --border:#E5E7EB;
+
+  --accent:#007AFF;
+
+  --radius:28px;
+
+  --editor-font-size:16px;
+  --editor-line-height:1.9;
+
+}
+
+body{
+
+  font-family:'Inter',sans-serif;
+
+  background:var(--bg);
+
+  color:var(--text);
+
+  width:100%;
+  height:100vh;
+
+  overflow:hidden;
+
+}
+
+/* APP */
+
+.app{
+
+  display:flex;
+
+  width:100%;
+  height:100vh;
+
+  padding:18px;
+  gap:18px;
+
+}
+
+/* SIDEBAR */
+
+.sidebar{
+
+  width:300px;
+  min-width:300px;
+
+  background:var(--card);
+
+  border-radius:var(--radius);
+
+  padding:22px;
+
+  display:flex;
+  flex-direction:column;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.06);
+
+  transition:.3s ease;
+
+}
+
+.sidebar-header{
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  margin-bottom:22px;
+
+}
+
+.sidebar-title{
+
+  font-size:24px;
+  font-weight:700;
+
+  letter-spacing:-0.5px;
+
+}
+
+.notes-list{
+
+  flex-grow:1;
+
+  overflow-y:auto;
+
+  padding-right:4px;
+
+}
+
+/* NOTE ITEM */
+
+.note-item{
+
+  padding:18px;
+
+  border-radius:22px;
+
+  margin-bottom:12px;
+
+  cursor:pointer;
+
+  transition:.2s ease;
+
+  position:relative;
+
+  border:1px solid transparent;
+
+}
+
+.note-item:hover{
+
+  background:rgba(0,122,255,0.05);
+
+}
+
+.note-item.active{
+
+  background:rgba(0,122,255,0.1);
+
+  border-color:rgba(0,122,255,0.1);
+
+}
+
+.note-title{
+
+  font-size:16px;
+  font-weight:600;
+
+  margin-bottom:8px;
+
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+
+}
+
+.note-date{
+
+  font-size:13px;
+
+  color:var(--sub);
+
+}
+
+.delete-btn{
+
+  position:absolute;
+
+  right:12px;
+  top:12px;
+
+  width:34px;
+  height:34px;
+
+  border:none;
+
+  border-radius:50%;
+
+  background:transparent;
+
+  color:#ff4d4f;
+
+  cursor:pointer;
+
+  opacity:0;
+
+  transition:.2s ease;
+
+}
+
+.note-item:hover .delete-btn{
+  opacity:1;
+}
+
+/* BUTTON */
+
+.icon-btn{
+
+  width:48px;
+  height:48px;
+
+  border:none;
+
+  border-radius:50%;
+
+  background:rgba(0,122,255,0.08);
+
+  color:var(--accent);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+
+  transition:.25s ease;
+
+  flex-shrink:0;
+
+}
+
+.icon-btn:hover{
+
+  transform:scale(1.04);
+
+  background:rgba(0,122,255,0.14);
+
+}
+
+/* MAIN */
+
+.main{
+
+  flex-grow:1;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:18px;
+
+  min-width:0;
+
+  position:relative;
+
+}
+
+/* TOPBAR */
+
+.topbar{
+
+  height:88px;
+
+  background:var(--card);
+
+  border-radius:var(--radius);
+
+  padding:0 24px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  flex-shrink:0;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.06);
+
+}
+
+.topbar-left{
+
+  display:flex;
+  align-items:center;
+  gap:14px;
+
+}
+
+.current-note{
+
+  font-size:22px;
+  font-weight:700;
+
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+
+  max-width:400px;
+
+}
+
+.topbar-actions{
+
+  display:flex;
+  gap:12px;
+
+}
+
+/* EDITOR CARD */
+
+.editor-card{
+
+  flex-grow:1;
+
+  background:var(--card);
+
+  border-radius:32px;
+
+  display:flex;
+  flex-direction:column;
+
+  overflow:hidden;
+
+  min-height:0;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.06);
+
+}
+
+/* EDITOR HEADER */
+
+.editor-header{
+
+  padding:30px 30px 0;
+
+  flex-shrink:0;
+
+}
+
+.title-input{
+
+  width:100%;
+
+  border:none;
+  outline:none;
+
+  background:transparent;
+
+  font-size:34px;
+  font-weight:700;
+
+  color:var(--text);
+
+}
+
+/* EDITOR WRAPPER */
+
+.editor-wrapper{
+
+  flex-grow:1;
+
+  display:flex;
+
+  min-height:0;
+
+  overflow:hidden;
+
+}
+
+/* LINE NUMBERS */
+
+.line-numbers{
+
+  width:64px;
+
+  flex-shrink:0;
+
+  overflow:hidden;
+
+  border-right:1px solid var(--border);
+
+  background:rgba(0,0,0,0.02);
+
+  padding-top:20px;
+
+  text-align:right;
+
+  user-select:none;
+
+  transition:.2s ease;
+
+}
+
+.line-number{
+
+  padding-right:16px;
+
+  color:var(--sub);
+
+  font-size:var(--editor-font-size);
+
+  line-height:calc(
+    var(--editor-font-size) * var(--editor-line-height)
+  );
+
+}
+
+.line-number.active{
+
+  color:var(--accent);
+
+  font-weight:700;
+
+}
+
+/* TEXTAREA */
+
+.editor{
+
+  flex-grow:1;
+
+  border:none;
+  outline:none;
+
+  resize:none;
+
+  background:transparent;
+
+  padding:20px 26px;
+
+  color:var(--text);
+
+  overflow:auto;
+
+  font-family:'Inter',sans-serif;
+
+  font-size:var(--editor-font-size);
+
+  line-height:calc(
+    var(--editor-font-size) * var(--editor-line-height)
+  );
+
+}
+
+/* STATUS BAR */
+
+.statusbar{
+
+  height:52px;
+
+  flex-shrink:0;
+
+  border-top:1px solid var(--border);
+
+  padding:0 22px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  color:var(--sub);
+
+  font-size:14px;
+
+}
+
+/* SETTINGS */
+
+.settings{
+
+  position:absolute;
+
+  top:100px;
+  right:0;
+
+  width:320px;
+
+  background:var(--card);
+
+  border-radius:28px;
+
+  padding:24px;
+
+  box-shadow:
+    0 14px 40px rgba(0,0,0,0.12);
+
+  opacity:0;
+
+  pointer-events:none;
+
+  transform:
+    translateY(-10px)
+    scale(.96);
+
+  transition:.25s ease;
+
+  z-index:100;
+
+}
+
+.settings.active{
+
+  opacity:1;
+
+  pointer-events:auto;
+
+  transform:
+    translateY(0)
+    scale(1);
+
+}
+
+.settings-title{
+
+  font-size:20px;
+  font-weight:700;
+
+  margin-bottom:24px;
+
+}
+
+/* SETTING */
+
+.setting{
+
+  margin-bottom:24px;
+
+}
+
+.setting-row{
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  margin-bottom:12px;
+
+}
+
+.setting-label{
+
+  font-size:15px;
+  font-weight:600;
+
+}
+
+.setting-value{
+
+  color:var(--accent);
+
+  font-weight:600;
+
+}
+
+/* RANGE */
+
+input[type="range"]{
+
+  width:100%;
+
+  height:6px;
+
+  appearance:none;
+
+  background:#D6E5FF;
+
+  border-radius:999px;
+
+}
+
+input[type="range"]::-webkit-slider-thumb{
+
+  appearance:none;
+
+  width:20px;
+  height:20px;
+
+  border-radius:50%;
+
+  background:var(--accent);
+
+  border:4px solid white;
+
+  cursor:pointer;
+
+}
+
+/* TOGGLE */
+
+.toggle{
+
+  width:58px;
+  height:32px;
+
+  border-radius:999px;
+
+  background:#d1d5db;
+
+  position:relative;
+
+  cursor:pointer;
+
+  transition:.25s ease;
+
+}
+
+.toggle::before{
+
+  content:"";
+
+  position:absolute;
+
+  top:4px;
+  left:4px;
+
+  width:24px;
+  height:24px;
+
+  border-radius:50%;
+
+  background:white;
+
+  transition:.25s ease;
+
+}
+
+.toggle.active{
+
+  background:var(--accent);
+
+}
+
+.toggle.active::before{
+
+  transform:translateX(26px);
+
+}
+
+/* SAVE BUTTON */
+
+.save-btn{
+
+  position:absolute;
+
+  right:26px;
+  bottom:76px;
+
+  border:none;
+
+  border-radius:999px;
+
+  padding:14px 24px;
+
+  background:var(--accent);
+
+  color:white;
+
+  font-weight:600;
+
+  cursor:pointer;
+
+  display:none;
+
+  box-shadow:
+    0 12px 30px rgba(0,122,255,0.3);
+
+}
+
+.save-btn.show{
+  display:block;
+}
+
+/* MOBILE */
+
+.mobile-btn{
+  display:none;
+}
+
+@media(max-width:900px){
+
+  .sidebar{
+
+    position:fixed;
+
+    left:-100%;
+    top:12px;
+    bottom:12px;
+
+    z-index:999;
+
+    transition:.3s ease;
+
+  }
+
+  .sidebar.open{
+    left:12px;
+  }
+
+  .mobile-btn{
+    display:flex;
+  }
+
+  .settings{
+    width:100%;
+  }
+
+  .current-note{
+    max-width:180px;
+  }
+
+}
+
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+
+  <aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-header">
+
+      <div class="sidebar-title">
+        Samsung Notes
+      </div>
+
+      <button class="icon-btn" id="addBtn">
+        <i data-lucide="plus"></i>
+      </button>
+
+    </div>
+
+    <div class="notes-list" id="notesList"></div>
+
+  </aside>
+
+  <!-- MAIN -->
+
+  <main class="main">
+
+    <!-- TOPBAR -->
+
+    <div class="topbar">
+
+      <div class="topbar-left">
+
+        <button
+          class="icon-btn mobile-btn"
+          id="menuBtn"
+        >
+          <i data-lucide="menu"></i>
+        </button>
+
+        <div
+          class="current-note"
+          id="currentNoteTitle"
+        >
+          Không tiêu đề
+        </div>
+
+      </div>
+
+      <div class="topbar-actions">
+
+        <button
+          class="icon-btn"
+          id="settingsBtn"
+        >
+          <i data-lucide="settings-2"></i>
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- SETTINGS -->
+
+    <div class="settings" id="settingsPanel">
+
+      <div class="settings-title">
+        Cài đặt
+      </div>
+
+      <!-- FONT -->
+
+      <div class="setting">
+
+        <div class="setting-row">
+
+          <div class="setting-label">
+            Kích thước chữ
+          </div>
+
+          <div
+            class="setting-value"
+            id="fontValue"
+          >
+            16px
+          </div>
+
+        </div>
+
+        <input
+          type="range"
+          min="12"
+          max="40"
+          value="16"
+          id="fontSlider"
+        >
+
+      </div>
+
+      <!-- AUTOSAVE -->
+
+      <div class="setting">
+
+        <div class="setting-row">
+
+          <div class="setting-label">
+            Auto-save
+          </div>
+
+          <div
+            class="toggle active"
+            id="autosaveToggle"
+          ></div>
+
+        </div>
+
+      </div>
+
+      <!-- LINE -->
+
+      <div class="setting">
+
+        <div class="setting-row">
+
+          <div class="setting-label">
+            Số dòng
+          </div>
+
+          <div
+            class="toggle active"
+            id="lineToggle"
+          ></div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- EDITOR -->
+
+    <section class="editor-card">
+
+      <div class="editor-header">
+
+        <input
+          type="text"
+          class="title-input"
+          id="titleInput"
+          placeholder="Tiêu đề..."
+        >
+
+      </div>
+
+      <div class="editor-wrapper">
+
+        <!-- LINE -->
+
+        <div
+          class="line-numbers"
+          id="lineNumbers"
+        ></div>
+
+        <!-- EDITOR -->
+
+        <textarea
+          class="editor"
+          id="editor"
+          spellcheck="false"
+          placeholder="Bắt đầu ghi chú..."
+        ></textarea>
+
+      </div>
+
+      <!-- STATUS -->
+
+      <div class="statusbar">
+
+        <div id="wordCount">
+          0 từ
+        </div>
+
+        <div id="lineCount">
+          1 dòng
+        </div>
+
+      </div>
+
+      <!-- SAVE -->
+
+      <button
+        class="save-btn"
+        id="saveBtn"
+      >
+        Lưu
+      </button>
+
+    </section>
+
+  </main>
+
+</div>
+
+<script>
+
+lucide.createIcons();
+
+/* STORAGE */
+
+const NOTES_KEY =
+  "oneui_notes_data";
+
+const SETTINGS_KEY =
+  "oneui_notes_settings";
+
+/* ELEMENTS */
+
+const notesList =
+  document.getElementById("notesList");
+
+const addBtn =
+  document.getElementById("addBtn");
+
+const titleInput =
+  document.getElementById("titleInput");
+
+const editor =
+  document.getElementById("editor");
+
+const currentNoteTitle =
+  document.getElementById("currentNoteTitle");
+
+const lineNumbers =
+  document.getElementById("lineNumbers");
+
+const wordCount =
+  document.getElementById("wordCount");
+
+const lineCount =
+  document.getElementById("lineCount");
+
+const settingsBtn =
+  document.getElementById("settingsBtn");
+
+const settingsPanel =
+  document.getElementById("settingsPanel");
+
+const fontSlider =
+  document.getElementById("fontSlider");
+
+const fontValue =
+  document.getElementById("fontValue");
+
+const autosaveToggle =
+  document.getElementById("autosaveToggle");
+
+const lineToggle =
+  document.getElementById("lineToggle");
+
+const saveBtn =
+  document.getElementById("saveBtn");
+
+const sidebar =
+  document.getElementById("sidebar");
+
+const menuBtn =
+  document.getElementById("menuBtn");
+
+/* STATE */
+
+let notes = [];
+
+let currentId = null;
+
+let saveTimeout = null;
+
+let settings = {
+
+  fontSize:16,
+
+  autoSave:true,
+
+  lineNumbers:true
+
+};
+
+/* CREATE NOTE */
+
+function createNote(){
+
+  const note = {
+
+    id:Date.now(),
+
+    title:"Ghi chú mới",
+
+    content:"",
+
+    updated:Date.now()
+
+  };
+
+  notes.unshift(note);
+
+  currentId = note.id;
+
+  renderNotes();
+
+  loadCurrentNote();
+
+  saveData();
+
+}
+
+/* DELETE NOTE */
+
+function deleteNote(id){
+
+  if(!confirm("Xóa ghi chú này?"))
+    return;
+
+  notes =
+    notes.filter(
+      note => note.id !== id
+    );
+
+  if(notes.length === 0){
+    createNote();
+    return;
+  }
+
+  if(currentId === id){
+    currentId = notes[0].id;
+  }
+
+  renderNotes();
+
+  loadCurrentNote();
+
+  saveData();
+
+}
+
+/* SAVE */
+
+function saveData(){
+
+  localStorage.setItem(
+    NOTES_KEY,
+    JSON.stringify(notes)
+  );
+
+  localStorage.setItem(
+    SETTINGS_KEY,
+    JSON.stringify(settings)
+  );
+
+}
+
+/* FORMAT DATE */
+
+function formatDate(time){
+
+  return new Date(time)
+  .toLocaleString("vi-VN",{
+
+    hour:"2-digit",
+    minute:"2-digit",
+
+    day:"2-digit",
+    month:"short"
+
+  });
+
+}
+
+/* RENDER */
+
+function renderNotes(){
+
+  notesList.innerHTML = "";
+
+  notes.forEach(note => {
+
+    const div =
+      document.createElement("div");
+
+    div.className =
+      `note-item
+      ${note.id === currentId
+      ? "active" : ""}`;
+
+    div.innerHTML = `
+
+      <div class="note-title">
+        ${note.title}
+      </div>
+
+      <div class="note-date">
+        ${formatDate(note.updated)}
+      </div>
+
+      <button class="delete-btn">
+        <i data-lucide="trash-2"></i>
+      </button>
+
+    `;
+
+    div.addEventListener("click",()=>{
+
+      currentId = note.id;
+
+      renderNotes();
+
+      loadCurrentNote();
+
+      if(window.innerWidth < 900){
+        sidebar.classList.remove("open");
+      }
+
+    });
+
+    div.querySelector(".delete-btn")
+    .addEventListener("click",(e)=>{
+
+      e.stopPropagation();
+
+      deleteNote(note.id);
+
+    });
+
+    notesList.appendChild(div);
+
+  });
+
+  lucide.createIcons();
+
+}
+
+/* LOAD NOTE */
+
+function loadCurrentNote(){
+
+  const note =
+    notes.find(
+      n => n.id === currentId
+    );
+
+  if(!note) return;
+
+  titleInput.value =
+    note.title;
+
+  editor.value =
+    note.content;
+
+  currentNoteTitle.textContent =
+    note.title;
+
+  updateLineNumbers();
+
+  updateStatus();
+
+}
+
+/* UPDATE NOTE */
+
+function updateCurrentNote(){
+
+  const note =
+    notes.find(
+      n => n.id === currentId
+    );
+
+  if(!note) return;
+
+  note.title =
+    titleInput.value
+    || "Không tiêu đề";
+
+  note.content =
+    editor.value;
+
+  note.updated =
+    Date.now();
+
+  currentNoteTitle.textContent =
+    note.title;
+
+  renderNotes();
+
+  saveData();
+
+}
+
+/* DEBOUNCE */
+
+function debounceSave(){
+
+  if(!settings.autoSave)
+    return;
+
+  clearTimeout(saveTimeout);
+
+  saveTimeout =
+    setTimeout(()=>{
+
+      updateCurrentNote();
+
+    },1000);
+
+}
+
+/* LINE NUMBERS */
+
+function updateLineNumbers(){
+
+  const lines =
+    editor.value.split("\n").length;
+
+  lineNumbers.innerHTML = "";
+
+  for(let i = 1;i <= lines;i++){
+
+    const div =
+      document.createElement("div");
+
+    div.className =
+      "line-number";
+
+    div.textContent = i;
+
+    lineNumbers.appendChild(div);
+
+  }
+
+}
+
+/* STATUS */
+
+function updateStatus(){
+
+  const words =
+    editor.value.trim()
+    ? editor.value.trim()
+      .split(/\s+/).length
+    : 0;
+
+  const lines =
+    editor.value.split("\n").length;
+
+  wordCount.textContent =
+    `${words} từ`;
+
+  lineCount.textContent =
+    `${lines} dòng`;
+
+}
+
+/* FONT SIZE */
+
+function applyFontSize(size){
+
+  document.documentElement
+  .style.setProperty(
+    "--editor-font-size",
+    `${size}px`
+  );
+
+  fontValue.textContent =
+    `${size}px`;
+
+}
+
+/* INIT */
+
+function init(){
+
+  const storedNotes =
+    JSON.parse(
+      localStorage.getItem(NOTES_KEY)
+    );
+
+  const storedSettings =
+    JSON.parse(
+      localStorage.getItem(SETTINGS_KEY)
+    );
+
+  if(storedSettings){
+    settings = storedSettings;
+  }
+
+  if(storedNotes
+    && storedNotes.length){
+
+    notes = storedNotes;
+
+    currentId = notes[0].id;
+
+  }else{
+
+    createNote();
+
+  }
+
+  applyFontSize(settings.fontSize);
+
+  fontSlider.value =
+    settings.fontSize;
+
+  /* AUTO SAVE */
+
+  if(settings.autoSave){
+
+    autosaveToggle
+    .classList.add("active");
+
+    saveBtn
+    .classList.remove("show");
+
+  }else{
+
+    autosaveToggle
+    .classList.remove("active");
+
+    saveBtn
+    .classList.add("show");
+
+  }
+
+  /* LINE NUMBERS */
+
+  if(settings.lineNumbers){
+
+    lineToggle
+    .classList.add("active");
+
+    lineNumbers.style.display =
+      "block";
+
+  }else{
+
+    lineToggle
+    .classList.remove("active");
+
+    lineNumbers.style.display =
+      "none";
+
+  }
+
+  renderNotes();
+
+  loadCurrentNote();
+
+}
+
+/* EVENTS */
+
+addBtn.addEventListener(
+  "click",
+  createNote
+);
+
+titleInput.addEventListener(
+  "input",
+  ()=>{
+
+    debounceSave();
+
+  }
+);
+
+editor.addEventListener(
+  "input",
+  ()=>{
+
+    updateLineNumbers();
+
+    updateStatus();
+
+    debounceSave();
+
+  }
+);
+
+/* SETTINGS */
+
+settingsBtn.addEventListener(
+  "click",
+  ()=>{
+
+    settingsPanel
+    .classList.toggle("active");
+
+  }
+);
+
+document.addEventListener(
+  "click",
+  (e)=>{
+
+    if(
+      !settingsPanel.contains(e.target)
+      &&
+      !settingsBtn.contains(e.target)
+    ){
+
+      settingsPanel
+      .classList.remove("active");
+
+    }
+
+  }
+);
+
+/* FONT */
+
+fontSlider.addEventListener(
+  "input",
+  ()=>{
+
+    settings.fontSize =
+      Number(fontSlider.value);
+
+    applyFontSize(
+      settings.fontSize
+    );
+
+    saveData();
+
+  }
+);
+
+/* AUTOSAVE */
+
+autosaveToggle.addEventListener(
+  "click",
+  ()=>{
+
+    settings.autoSave =
+      !settings.autoSave;
+
+    autosaveToggle
+    .classList.toggle("active");
+
+    saveBtn
+    .classList.toggle(
+      "show",
+      !settings.autoSave
+    );
+
+    saveData();
+
+  }
+);
+
+/* LINE */
+
+lineToggle.addEventListener(
+  "click",
+  ()=>{
+
+    settings.lineNumbers =
+      !settings.lineNumbers;
+
+    lineToggle
+    .classList.toggle("active");
+
+    lineNumbers.style.display =
+      settings.lineNumbers
+      ? "block"
+      : "none";
+
+    saveData();
+
+  }
+);
+
+/* SAVE */
+
+saveBtn.addEventListener(
+  "click",
+  updateCurrentNote
+);
+
+/* CTRL + S */
+
+document.addEventListener(
+  "keydown",
+  (e)=>{
+
+    if(
+      (e.ctrlKey || e.metaKey)
+      &&
+      e.key.toLowerCase() === "s"
+    ){
+
+      e.preventDefault();
+
+      updateCurrentNote();
+
+    }
+
+  }
+);
+
+/* SCROLL SYNC */
+
+editor.addEventListener(
+  "scroll",
+  ()=>{
+
+    lineNumbers.scrollTop =
+      editor.scrollTop;
+
+  }
+);
+
+/* MOBILE */
+
+menuBtn.addEventListener(
+  "click",
+  ()=>{
+
+    sidebar.classList.toggle("open");
+
+  }
+);
+
+/* START */
+
+init();
+
+</script>
+
+</body>
+</html>
